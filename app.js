@@ -67,14 +67,14 @@ app.get('/bot-stop', function(req, res, next) {
 
 app.get('/bot-send', function(req, res, next) {
   const contacts = _.filter(bot.contacts, value => {
-    return value.RemarkName.indexOf(req.query.remark || '消息推送') !== -1;
+    return value.NickName.indexOf(req.query.name || '消息推送') !== -1;
   });
   contacts.forEach(item => {
     bot.sendMsg(req.query.msg, item.UserName);
   });
   res.json({
     filter: contacts,
-    contacts: bot.contacts,
+    // contacts: bot.contacts,
   });
 });
 
