@@ -14,7 +14,8 @@ const _ = require('lodash')
 require('./cloud');
 
 var app = express();
-let bot = new Wechat();
+let bot = null;
+let zhouxingxingBot = null;
 
 // 设置模板引擎
 app.set('views', path.join(__dirname, 'views'));
@@ -41,13 +42,7 @@ app.get('/', function(req, res) {
 });
 
 app.get('/bot-start', function(req, res, next) {
-  if (bot.state !== 'init') {
-    return res.json({
-      state: bot.state,
-      qr: bot.qr,
-    });
-  }
-
+  bot = new Wechat();
   try {
     bot.start();
     bot.on('uuid', uuid => {
@@ -60,11 +55,6 @@ app.get('/bot-start', function(req, res, next) {
   } catch (e) {}
 });
 
-app.get('/bot-stop', function(req, res, next) {
-  bot.stop();
-  res.json('已停止');
-});
-
 app.get('/bot-send', function(req, res, next) {
   const contacts = _.filter(bot.contacts, value => {
     return value.NickName.indexOf(req.query.name || '消息推送') !== -1;
@@ -74,7 +64,32 @@ app.get('/bot-send', function(req, res, next) {
   });
   res.json({
     filter: contacts,
-    // contacts: bot.contacts,
+  });
+});
+
+app.get('/zhouxingxing-bot-start', function(req, res, next) {
+  zhouxingxingBot = new Wechat();
+  try {
+    zhouxingxingBot.start();
+    zhouxingxingBot.on('uuid', uuid => {
+      const qr = 'https://login.weixin.qq.com/qrcode/' + uuid;
+      zhouxingxingBot.qr = qr;
+      res.json({
+        qr,
+      });
+    });
+  } catch (e) {}
+});
+
+app.get('/zhouxingxing-bot-send', function(req, res, next) {
+  const contacts = _.filter(zhouxingxingBot.contacts, value => {
+    return value.NickName.indexOf(req.query.name || '消息推送') !== -1;
+  });
+  contacts.forEach(item => {
+    zhouxingxingBot.sendMsg(req.query.msg, item.UserName);
+  });
+  res.json({
+    filter: contacts,
   });
 });
 
