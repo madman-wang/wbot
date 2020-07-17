@@ -17,7 +17,7 @@
     "express": "^4.16.4",
     "leancloud-storage": "^3.11.0",
     "leanengine": "^3.3.2",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "wechat4u": "^0.7.7"
